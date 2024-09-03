@@ -41,13 +41,13 @@
                                         @foreach ($employees as $employee)
                                             <tr class="align-middle">
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td> <img style="width:50px; height:50px" class="rounded-circle" src="{{ asset('img/employee/' . $employee->image) }}" alt="{{ __('Image not loaded') }}"> </td>
+                                                <td> <img style="width:50px; height:50px" class="rounded-circle" src="{{ asset('img/employee/' . $employee->image) }}" alt="Image not loaded"> </td>
                                                 <td>{{ $employee->name }}</td>
                                                 <td>{{ $employee->cpf }}</td>
                                                 <td>{{ $employee->address }}</td>
 
                                                 <td>
-                                                    <a href="{{ route('employee.edit', ['employee' => $employee->id]) }}"
+                                                    <a href="{{ route('employee.edit', $employee->id) }}"
                                                         title="Edit Employee">
                                                         <button class="btn btn-warning btn-sm">
                                                             {{ __('Edit') }}
@@ -55,7 +55,7 @@
                                                     </a>
 
                                                     <form method="POST"
-                                                        action="{{ route('employee.destroy', ['employee' => $employee->id]) }}"
+                                                        action="{{ route('employee.destroy', $employee->id) }}"
                                                         accept-charset="UTF-8" style="display:inline">
                                                         {{ method_field('DELETE') }}
                                                         {{ csrf_field() }}
@@ -70,7 +70,7 @@
                                         @endforeach
                                     @else
                                         <tr>
-                                            <td class="text-center" colspan="5">{{ __('Employees not found!') }}</td>
+                                            <td class="text-center" colspan="1">{{ __('Employees not found!') }}</td>
                                         </tr>
                                     @endif
 

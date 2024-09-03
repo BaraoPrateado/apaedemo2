@@ -10,7 +10,7 @@
                     {{ __("Edit the Employee") }}</div>
                 <div class="card-body">
 
-                    <form action="{{ route('employee.update', ['employee' => $employee->id]) }}" method="post" enctype="multipart/form-data">
+                    <form action="{{ route('employee.update', $employee->id) }}" method="post" enctype="multipart/form-data">
                         {!! csrf_field() !!}
                         @method("PATCH")
 
@@ -48,8 +48,8 @@
 
                         <div class="form-group">
                             <label for="image">{{ __("Image of Employee:") }}</label> </br>
-                            <input type="file" value="{{ old('image', $employee->image) }}" id="image" name="image" class="">
-                            <img style="width: 100px" src="{{ asset('img/employee/' . $employee->image) }}" alt="Imagem não carregada">
+                            <input type="file" id="image" name="image" class="mb-2">
+                            <img style="width: 100px" value="" src="{{ asset('img/employee/' . $employee->image) }}" alt="Imagem não Carregada">
 
                             @error('image')
                                 <span class="text-danger">{{$message}}</span>

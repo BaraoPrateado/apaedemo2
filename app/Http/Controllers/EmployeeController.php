@@ -7,7 +7,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Models\Employee;
 
-
 class EmployeeController extends Controller
 {
     /**
@@ -32,8 +31,7 @@ class EmployeeController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request): RedirectResponse
-    {
-        
+    {   
 
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -45,13 +43,15 @@ class EmployeeController extends Controller
         if($request->hasfile('image') && $request->file('image')->isValid()) {
 
             $imageName = time() . '.' . $request->image->getClientOriginalExtension();
-            $request->image->move(public_path('img/employee'), $imageName);
+            $request->image->move(public_path('img/employee/'), $imageName);
             $data['image'] = $imageName;
 
             /*$requestImage = $request->image;
             $extension = $requestImage->extension();
             $imageName = md5($requestImage->getClientOriginalName() . strtotime("now")) . "." . $extension;
             $request->image->move(public_path('img/employee'), $imageName);*/
+        } else {
+            $data['image'] = "Perfil_Desconhecido.webp";
         };
 
         $input = Employee::create($data);
@@ -84,22 +84,34 @@ class EmployeeController extends Controller
      */
     public function update(Request $request, $id): RedirectResponse
     {
-        $validation = $request->validate([
+        $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'cpf' => ['required', 'string', 'max:255'],
             'address' => ['required', 'string', 'max:255'],
             'image' => ['nullable', 'mimes:png,jpg,jpeg,webp', 'max:10240'],
         ]);
 
-        if ($request->has('image')) {
+        if ($request->has('image')) 
+        {
+            //Check old image
+            $destination = "img/employee/" . $request->image;
 
-            $destination = "img/employee/" . $employee->image
+            //remove old images
+            if(\File::exists($destination)) {
+                \File::delete($destination);
+            };
+            //Add new image
+            $imageName = time() . '.' . $request->image->getClientOriginalExtension();
+            //Update new image
+            $request->image->move(public_path('img/employee/'), $imageName);
+            $data['image'] = $imageName;
+
         };
 
         $employee = Employee::find($id);
-        $input = $employee->update($validation);
+        $input = $employee->update($data);
         if ($input) {
-            session()->flash('flash_message', 'Funcionário Adicionado com Sucesso');
+            session()->flash('flash_message', 'Funcionário Atualizado com Sucesso');
             return redirect(route('employee.index'));
         } else {
             session()->flash('error', 'Ocorreu algum problema');
@@ -110,8 +122,15 @@ class EmployeeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, $id)
     {
+        if($request->image) {
+            $destination = 'img/employee/'.$request->image;
+            if(\File::exists($destination)) 
+            {
+                \File::delete($destination);
+            }; 
+        };
         Employee::destroy($id);
         return redirect('employee')->with('flash_message', 'Employee Deleted!');
     }
